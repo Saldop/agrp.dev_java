@@ -21,6 +21,7 @@ import java.io.IOException;
 
 import static com.github.tomakehurst.wiremock.client.WireMock.okJson;
 import static com.github.tomakehurst.wiremock.client.WireMock.post;
+import static com.github.tomakehurst.wiremock.client.WireMock.postRequestedFor;
 import static com.github.tomakehurst.wiremock.client.WireMock.urlEqualTo;
 import static io.restassured.RestAssured.given;
 import static org.hamcrest.Matchers.*;
@@ -75,6 +76,9 @@ class ContractApiTest {
                 .body("issues[0].description", not(emptyString()))
                 .body("issues[0].originalClause", not(emptyString()))
                 .body("issues[0].recommendation", not(emptyString()));
+
+        analyzerMock.verify(1, postRequestedFor(urlEqualTo("/analyze")));
+        openAiMock.verify(1, postRequestedFor(urlEqualTo("/v1/chat/completions")));
     }
 
     @Test
@@ -86,6 +90,9 @@ class ContractApiTest {
                 .post("/contracts/analyze")
         .then()
                 .statusCode(400);
+
+        analyzerMock.verify(0, postRequestedFor(urlEqualTo("/analyze")));
+        openAiMock.verify(0, postRequestedFor(urlEqualTo("/v1/chat/completions")));
     }
 
     private static byte[] buildTestPdf(String text) throws IOException {
