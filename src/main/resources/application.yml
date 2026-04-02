@@ -23,3 +23,8 @@ springdoc:
 presidio:
   analyzer-url: http://localhost:5002
   anonymizer-url: http://localhost:5001
+
+openai:
+  api-key: ${OPENAI_API_KEY:}
+  model: o4-mini
+  base-url: https://api.openai.com

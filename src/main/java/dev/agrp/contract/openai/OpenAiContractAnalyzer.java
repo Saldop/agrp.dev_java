@@ -1,0 +1,118 @@
+package dev.agrp.contract.openai;
+
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import org.springframework.core.io.Resource;
+import org.springframework.core.io.ResourceLoader;
+import org.springframework.http.MediaType;
+import org.springframework.stereotype.Component;
+import org.springframework.web.client.RestClient;
+
+import java.io.IOException;
+import java.nio.charset.StandardCharsets;
+import java.util.List;
+import java.util.Map;
+
+@Component
+public class OpenAiContractAnalyzer {
+
+    private final RestClient restClient;
+    private final OpenAiProperties properties;
+    private final ResourceLoader resourceLoader;
+    private final ObjectMapper objectMapper;
+
+    public OpenAiContractAnalyzer(
+            RestClient.Builder builder,
+            OpenAiProperties properties,
+            ResourceLoader resourceLoader,
+            ObjectMapper objectMapper) {
+        this.restClient = builder
+                .baseUrl(properties.baseUrl())
+                .defaultHeader("Authorization", "Bearer " + properties.apiKey())
+                .build();
+        this.properties = properties;
+        this.resourceLoader = resourceLoader;
+        this.objectMapper = objectMapper;
+    }
+
+    public OpenAiAnalysisResult analyze(String anonymizedText, String language) {
+        String systemPrompt = loadPrompt(language);
+        Map<String, Object> request = buildRequest(anonymizedText, systemPrompt);
+
+        String rawResponse = restClient.post()
+                .uri("/v1/chat/completions")
+                .contentType(MediaType.APPLICATION_JSON)
+                .body(request)
+                .retrieve()
+                .body(String.class);
+
+        return parseResponse(rawResponse);
+    }
+
+    private String loadPrompt(String language) {
+        Resource resource = resourceLoader.getResource(
+                "classpath:prompts/contract-analysis-" + language + ".txt");
+        try {
+            return resource.getContentAsString(StandardCharsets.UTF_8);
+        } catch (IOException e) {
+            throw new IllegalArgumentException("No prompt found for language: " + language, e);
+        }
+    }
+
+    private Map<String, Object> buildRequest(String text, String systemPrompt) {
+        return Map.of(
+                "model", properties.model(),
+                "messages", List.of(
+                        Map.of("role", "system", "content", systemPrompt),
+                        Map.of("role", "user", "content", text)
+                ),
+                "response_format", Map.of(
+                        "type", "json_schema",
+                        "json_schema", Map.of(
+                                "name", "contract_analysis",
+                                "strict", true,
+                                "schema", contractAnalysisSchema()
+                        )
+                )
+        );
+    }
+
+    private OpenAiAnalysisResult parseResponse(String rawResponse) {
+        try {
+            JsonNode root = objectMapper.readTree(rawResponse);
+            String content = root.path("choices").get(0).path("message").path("content").asText();
+            return objectMapper.readValue(content, OpenAiAnalysisResult.class);
+        } catch (JsonProcessingException e) {
+            throw new RuntimeException("Failed to parse OpenAI response", e);
+        }
+    }
+
+    private static Map<String, Object> contractAnalysisSchema() {
+        return Map.of(
+                "type", "object",
+                "properties", Map.of(
+                        "contractType", Map.of("type", "string"),
+                        "participants", Map.of("type", "array", "items", Map.of("type", "string")),
+                        "issues", Map.of(
+                                "type", "array",
+                                "items", Map.of(
+                                        "type", "object",
+                                        "properties", Map.of(
+                                                "description", Map.of("type", "string"),
+                                                "severity", Map.of("type", "string",
+                                                        "enum", List.of("LOW", "MEDIUM", "HIGH")),
+                                                "originalClause", Map.of("type", "string"),
+                                                "recommendation", Map.of("type", "string")
+                                        ),
+                                        "required", List.of("description", "severity",
+                                                "originalClause", "recommendation"),
+                                        "additionalProperties", false
+                                )
+                        )
+                ),
+                "required", List.of("contractType", "participants", "issues"),
+                "additionalProperties", false
+        );
+    }
+}

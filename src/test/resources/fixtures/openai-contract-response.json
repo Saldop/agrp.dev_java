@@ -1,0 +1,21 @@
+{
+  "id": "chatcmpl-test123",
+  "object": "chat.completion",
+  "created": 1712345678,
+  "model": "o4-mini",
+  "choices": [
+    {
+      "index": 0,
+      "message": {
+        "role": "assistant",
+        "content": "{\"contractType\":\"Lease Agreement\",\"participants\":[\"<PERSON_1>\",\"<PERSON_2>\"],\"issues\":[{\"description\":\"The termination clause lacks a mandatory notice period, creating legal uncertainty for both parties.\",\"severity\":\"HIGH\",\"originalClause\":\"Either party may terminate this agreement at any time without notice.\",\"recommendation\":\"Specify a minimum notice period of at least 30 days before termination.\"}]}"
+      },
+      "finish_reason": "stop"
+    }
+  ],
+  "usage": {
+    "prompt_tokens": 120,
+    "completion_tokens": 80,
+    "total_tokens": 200
+  }
+}
