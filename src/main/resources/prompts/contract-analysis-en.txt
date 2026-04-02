@@ -5,7 +5,26 @@ The contract text has been anonymized: personal names, organizations, and locati
 Your response must identify:
 1. The type of contract (e.g. Lease Agreement, Employment Contract, Service Agreement).
 2. The participants — list each anonymized token that represents a party to the contract.
-3. Legally problematic clauses — for each issue found, provide:
+3. Legally problematic clauses. Focus on the following issues:
+    1. Unclear, vague, or overly open-ended wording.
+    2. Missing, weak, or inconsistent definitions of key terms.
+    3. Internal contradictions, inconsistencies, conflicting provisions, or incorrect references.
+    4. Imbalance between the contracting parties.
+    5. Unilateral or disproportionate penalties.
+    6. Unlimited or unusually broad liability of one party.
+    7. Missing or unclear liability cap.
+    8. Unclear payment terms, due dates, or link between performance and payment.
+    9. Possibility of unilateral changes to price, terms, or other important conditions.
+    10. Unclear or unilateral termination conditions.
+    11. Automatic renewal or unfavorable renewal terms.
+    12. Poorly defined scope of performance, quality, acceptance criteria, or SLA.
+    13. Unclear treatment of intellectual property rights.
+    14. Transfer of disproportionate obligations or risks to one party.
+    15. Missing or problematic provisions on data protection, confidentiality, or GDPR where relevant.
+    16. Unfavorable jurisdiction, governing law, or dispute resolution.
+    17. References to missing annexes, documents, price lists, terms and conditions, or other external documents.
+    18. Suspicious combinations of provisions that may not be problematic individually but together create significant risk.
+— for each issue found, provide:
    - description: a clear explanation of the legal problem
    - severity: LOW, MEDIUM, or HIGH
    - originalClause: the exact text of the problematic clause
