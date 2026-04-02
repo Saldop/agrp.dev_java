@@ -1,0 +1,61 @@
+package dev.agrp.contract;
+
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.tags.Tag;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
+
+import java.io.IOException;
+import java.util.Set;
+
+@Tag(name = "Contracts", description = "Contract analysis")
+@RestController
+@RequestMapping("/contracts")
+public class ContractController {
+
+    private static final Set<String> SUPPORTED_LANGUAGES = Set.of("en", "cs");
+
+    private final ContractAnalysisService service;
+
+    public ContractController(ContractAnalysisService service) {
+        this.service = service;
+    }
+
+    @Operation(
+            summary = "Analyze a contract PDF",
+            description = "Extracts text from the uploaded PDF, anonymizes PII, analyzes the contract " +
+                    "with an AI reasoning model, and returns structured findings."
+    )
+    @ApiResponse(responseCode = "200", description = "Analysis completed successfully",
+            content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE,
+                    schema = @Schema(implementation = ContractAnalysisResponse.class)))
+    @ApiResponse(responseCode = "400", description = "Unsupported language parameter",
+            content = @Content)
+    @ApiResponse(responseCode = "422", description = "Could not extract text from the uploaded PDF",
+            content = @Content)
+    @ApiResponse(responseCode = "502", description = "Upstream service (Presidio or OpenAI) unavailable",
+            content = @Content)
+    @PostMapping(value = "/analyze",
+            consumes = MediaType.MULTIPART_FORM_DATA_VALUE,
+            produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<ContractAnalysisResponse> analyze(
+            @Parameter(description = "PDF contract file", required = true)
+            @RequestPart("file") MultipartFile file,
+            @Parameter(description = "Contract language: 'en' (English) or 'cs' (Czech)")
+            @RequestParam(defaultValue = "en") String language) throws IOException {
+
+        if (!SUPPORTED_LANGUAGES.contains(language)) {
+            return ResponseEntity.badRequest().build();
+        }
+
+        ContractAnalysisResult result = service.analyze(file.getInputStream(), language);
+        return ResponseEntity.ok(new ContractAnalysisResponse(
+                result.contractType(), result.participants(), result.issues()));
+    }
+}
