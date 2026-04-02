@@ -19,3 +19,7 @@ springdoc:
     path: /swagger-ui.html
   api-docs:
     path: /v3/api-docs
+
+presidio:
+  analyzer-url: http://localhost:5002
+  anonymizer-url: http://localhost:5001

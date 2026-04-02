@@ -1,0 +1,14 @@
+[
+  {
+    "entity_type": "PERSON",
+    "start": 11,
+    "end": 20,
+    "score": 0.85
+  },
+  {
+    "entity_type": "LOCATION",
+    "start": 32,
+    "end": 37,
+    "score": 0.90
+  }
+]
