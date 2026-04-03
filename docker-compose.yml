@@ -10,6 +10,6 @@ services:
       - presidio-analyzer
 
   presidio-analyzer:
-    image: mcr.microsoft.com/presidio-analyzer:latest
+    image: mcr.microsoft.com/presidio-analyzer:2.2.362
     ports:
       - "5002:3000"
