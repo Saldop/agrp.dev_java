@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.io.InputStream;
 
 @Tag(name = "Contracts", description = "Contract analysis")
 @RestController
@@ -44,11 +45,18 @@ public class ContractController {
             produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<ContractAnalysisResponse> analyze(
             @Parameter(description = "PDF contract file", required = true)
-            @RequestPart("file") MultipartFile file) throws IOException {
+            @RequestPart("file") MultipartFile file) {
 
         if (!"application/pdf".equalsIgnoreCase(file.getContentType())) {
             return ResponseEntity.status(HttpStatus.UNSUPPORTED_MEDIA_TYPE).build();
         }
-        return ResponseEntity.ok(service.analyze(file.getInputStream()));
+        InputStream stream;
+        try {
+            stream = file.getInputStream();
+        } catch (IOException e) {
+            throw new ContractAnalysisException(
+                    ContractAnalysisException.Stage.PDF_EXTRACTION, "Failed to read uploaded file", e);
+        }
+        return ResponseEntity.ok(service.analyze(stream));
     }
 }
