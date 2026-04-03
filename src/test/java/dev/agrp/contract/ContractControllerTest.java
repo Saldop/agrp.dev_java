@@ -44,6 +44,15 @@ class ContractControllerTest {
     }
 
     @Test
+    void analyze_returns415WhenFileIsNotPdf() throws Exception {
+        MockMultipartFile textFile = new MockMultipartFile(
+                "file", "contract.txt", "text/plain", "not a pdf".getBytes());
+
+        mockMvc.perform(multipart("/contracts/analyze").file(textFile))
+                .andExpect(status().isUnsupportedMediaType());
+    }
+
+    @Test
     void analyze_returns422WhenPdfExtractionFails() throws Exception {
         when(service.analyze(any())).thenThrow(
                 new ContractAnalysisException(PDF_EXTRACTION, "bad pdf", null));
