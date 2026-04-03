@@ -25,8 +25,8 @@ springdoc:
     path: /v3/api-docs
 
 presidio:
-  analyzer-url: http://localhost:5002
-  anonymizer-url: http://localhost:5001
+  analyzer-url: ${PRESIDIO_ANALYZER_URL:http://localhost:5002}
+  anonymizer-url: ${PRESIDIO_ANONYMIZER_URL:http://localhost:5001}
 
 openai:
   api-key: ${OPENAI_API_KEY:}
