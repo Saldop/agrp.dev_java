@@ -46,17 +46,23 @@ class ContractApiTest {
     private byte[] testPdf;
     private String openAiFixture;
 
+    // "Lease agreement between John Smith and Jane Doe."
+    //  positions:               [24,34)            [39,47)
+    private static final String PDF_TEXT = "Lease agreement between John Smith and Jane Doe.";
+    private static final String PRESIDIO_ENTITIES =
+            "[{\"entity_type\":\"PERSON\",\"start\":24,\"end\":34,\"score\":0.9}," +
+            " {\"entity_type\":\"PERSON\",\"start\":39,\"end\":47,\"score\":0.9}]";
+
     @BeforeEach
     void setUp() throws Exception {
         RestAssured.port = port;
-        testPdf = buildTestPdf("This is a sample lease agreement between the parties.");
+        testPdf = buildTestPdf(PDF_TEXT);
         openAiFixture = new String(
                 getClass().getClassLoader()
                         .getResourceAsStream("fixtures/openai-contract-response.json")
                         .readAllBytes()
         );
-        // Return no entities so anonymize() is a no-op
-        analyzerMock.stubFor(post(urlEqualTo("/analyze")).willReturn(okJson("[]")));
+        analyzerMock.stubFor(post(urlEqualTo("/analyze")).willReturn(okJson(PRESIDIO_ENTITIES)));
         openAiMock.stubFor(post(urlEqualTo("/v1/chat/completions")).willReturn(okJson(openAiFixture)));
     }
 
@@ -69,7 +75,7 @@ class ContractApiTest {
         .then()
                 .statusCode(200)
                 .body("contractType", equalTo("Lease Agreement"))
-                .body("participants", not(empty()))
+                .body("participants", contains("John Smith", "Jane Doe"))
                 .body("issues", not(empty()))
                 .body("issues[0].severity", equalTo("HIGH"))
                 .body("issues[0].description", not(emptyString()))
