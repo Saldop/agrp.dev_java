@@ -12,8 +12,9 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
-import java.io.InputStream;
+import java.nio.charset.StandardCharsets;
 
 @Tag(name = "Contracts", description = "Contract analysis")
 @RestController
@@ -47,16 +48,16 @@ public class ContractController {
             @Parameter(description = "PDF contract file", required = true)
             @RequestPart("file") MultipartFile file) {
 
-        if (!"application/pdf".equalsIgnoreCase(file.getContentType())) {
-            return ResponseEntity.status(HttpStatus.UNSUPPORTED_MEDIA_TYPE).build();
-        }
-        InputStream stream;
+        byte[] bytes;
         try {
-            stream = file.getInputStream();
+            bytes = file.getBytes();
         } catch (IOException e) {
             throw new ContractAnalysisException(
                     ContractAnalysisException.Stage.PDF_EXTRACTION, "Failed to read uploaded file", e);
         }
-        return ResponseEntity.ok(service.analyze(stream));
+        if (bytes.length < 5 || !new String(bytes, 0, 5, StandardCharsets.US_ASCII).equals("%PDF-")) {
+            return ResponseEntity.status(HttpStatus.UNSUPPORTED_MEDIA_TYPE).build();
+        }
+        return ResponseEntity.ok(service.analyze(new ByteArrayInputStream(bytes)));
     }
 }

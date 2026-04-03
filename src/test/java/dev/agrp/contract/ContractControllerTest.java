@@ -27,7 +27,7 @@ class ContractControllerTest {
     ContractAnalysisService service;
 
     private static final MockMultipartFile PDF_FILE = new MockMultipartFile(
-            "file", "contract.pdf", "application/pdf", "pdf-bytes".getBytes());
+            "file", "contract.pdf", "application/pdf", "%PDF-fake".getBytes());
 
     @Test
     void analyze_returns200WithAnalysisResult() throws Exception {
