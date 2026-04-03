@@ -94,12 +94,12 @@ public class OpenAiContractAnalyzer {
             JsonNode root = objectMapper.readTree(rawResponse);
             JsonNode choices = root.path("choices");
             if (!choices.isArray() || choices.isEmpty()) {
-                throw new RuntimeException("OpenAI response contained no choices");
+                throw new IllegalStateException("OpenAI response contained no choices");
             }
             String content = choices.get(0).path("message").path("content").asText();
             return objectMapper.readValue(content, OpenAiAnalysisResult.class);
         } catch (JsonProcessingException e) {
-            throw new RuntimeException("Failed to parse OpenAI response", e);
+            throw new IllegalStateException("Failed to parse OpenAI response: " + e.getMessage(), e);
         }
     }
 }
