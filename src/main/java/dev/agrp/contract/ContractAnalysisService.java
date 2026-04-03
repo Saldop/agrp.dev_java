@@ -8,6 +8,8 @@ import dev.agrp.contract.presidio.AnonymizationResult;
 import dev.agrp.contract.presidio.DeAnonymizer;
 import dev.agrp.contract.presidio.PresidioClient;
 import dev.agrp.contract.presidio.PresidioEntity;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 import java.io.InputStream;
@@ -15,6 +17,8 @@ import java.util.List;
 
 @Service
 public class ContractAnalysisService {
+
+    private static final Logger log = LoggerFactory.getLogger(ContractAnalysisService.class);
 
     private final PdfTextExtractor pdfTextExtractor;
     private final PresidioClient presidioClient;
@@ -33,6 +37,7 @@ public class ContractAnalysisService {
         String text = extractText(pdf);
         List<PresidioEntity> entities = detectEntities(text);
         AnonymizationResult anonymization = presidioClient.anonymize(text, entities);
+        log.debug("Anonymized contract sent to OpenAI:\n{}", anonymization.anonymizedText());
         OpenAiAnalysisResult aiResult = analyzeWithAi(anonymization.anonymizedText());
         List<String> participants = DeAnonymizer.deAnonymizeParticipants(
                 aiResult.participants(), anonymization.tokenToReal());
