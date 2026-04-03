@@ -26,7 +26,6 @@ springdoc:
 
 presidio:
   analyzer-url: ${PRESIDIO_ANALYZER_URL:http://localhost:5002}
-  anonymizer-url: ${PRESIDIO_ANONYMIZER_URL:http://localhost:5001}
 
 openai:
   api-key: ${OPENAI_API_KEY:}
