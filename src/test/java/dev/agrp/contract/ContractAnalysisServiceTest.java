@@ -49,13 +49,13 @@ class ContractAnalysisServiceTest {
         List<String> deAnonymizedParticipants = List.of("Jan Novák");
 
         when(pdfTextExtractor.extract(any())).thenReturn("raw text");
-        when(presidioClient.analyze("raw text", "en")).thenReturn(entities);
+        when(presidioClient.analyze("raw text")).thenReturn(entities);
         when(presidioClient.anonymize("raw text", entities)).thenReturn(anonymization);
-        when(openAiContractAnalyzer.analyze("anonymized text", "en")).thenReturn(aiResult);
+        when(openAiContractAnalyzer.analyze("anonymized text")).thenReturn(aiResult);
         when(deAnonymizer.deAnonymizeParticipants(List.of("<PERSON_1>"),
                 Map.of("PERSON_1", "Jan Novák"))).thenReturn(deAnonymizedParticipants);
 
-        ContractAnalysisResult result = service.analyze(InputStream.nullInputStream(), "en");
+        ContractAnalysisResult result = service.analyze(InputStream.nullInputStream());
 
         assertThat(result.contractType()).isEqualTo("Lease Agreement");
         assertThat(result.participants()).containsExactly("Jan Novák");
@@ -63,9 +63,9 @@ class ContractAnalysisServiceTest {
 
         InOrder inOrder = inOrder(pdfTextExtractor, presidioClient, openAiContractAnalyzer, deAnonymizer);
         inOrder.verify(pdfTextExtractor).extract(any());
-        inOrder.verify(presidioClient).analyze(anyString(), anyString());
+        inOrder.verify(presidioClient).analyze(anyString());
         inOrder.verify(presidioClient).anonymize(anyString(), anyList());
-        inOrder.verify(openAiContractAnalyzer).analyze(anyString(), anyString());
+        inOrder.verify(openAiContractAnalyzer).analyze(anyString());
         inOrder.verify(deAnonymizer).deAnonymizeParticipants(anyList(), anyMap());
     }
 
@@ -73,7 +73,7 @@ class ContractAnalysisServiceTest {
     void analyze_wrapsExceptionWithPdfExtractionStage() {
         when(pdfTextExtractor.extract(any())).thenThrow(new RuntimeException("bad pdf"));
 
-        assertThatThrownBy(() -> service.analyze(InputStream.nullInputStream(), "en"))
+        assertThatThrownBy(() -> service.analyze(InputStream.nullInputStream()))
                 .isInstanceOf(ContractAnalysisException.class)
                 .satisfies(e -> assertThat(((ContractAnalysisException) e).getStage())
                         .isEqualTo(PDF_EXTRACTION));
@@ -82,10 +82,10 @@ class ContractAnalysisServiceTest {
     @Test
     void analyze_wrapsExceptionWithPiiAnalysisStage() {
         when(pdfTextExtractor.extract(any())).thenReturn("text");
-        when(presidioClient.analyze(anyString(), anyString()))
+        when(presidioClient.analyze(anyString()))
                 .thenThrow(new RuntimeException("presidio down"));
 
-        assertThatThrownBy(() -> service.analyze(InputStream.nullInputStream(), "en"))
+        assertThatThrownBy(() -> service.analyze(InputStream.nullInputStream()))
                 .isInstanceOf(ContractAnalysisException.class)
                 .satisfies(e -> assertThat(((ContractAnalysisException) e).getStage())
                         .isEqualTo(PII_ANALYSIS));
@@ -94,11 +94,11 @@ class ContractAnalysisServiceTest {
     @Test
     void analyze_wrapsExceptionWithPiiAnonymizationStage() {
         when(pdfTextExtractor.extract(any())).thenReturn("text");
-        when(presidioClient.analyze(anyString(), anyString())).thenReturn(List.of());
+        when(presidioClient.analyze(anyString())).thenReturn(List.of());
         when(presidioClient.anonymize(anyString(), anyList()))
                 .thenThrow(new RuntimeException("anonymize failed"));
 
-        assertThatThrownBy(() -> service.analyze(InputStream.nullInputStream(), "en"))
+        assertThatThrownBy(() -> service.analyze(InputStream.nullInputStream()))
                 .isInstanceOf(ContractAnalysisException.class)
                 .satisfies(e -> assertThat(((ContractAnalysisException) e).getStage())
                         .isEqualTo(PII_ANONYMIZATION));
@@ -107,13 +107,13 @@ class ContractAnalysisServiceTest {
     @Test
     void analyze_wrapsExceptionWithAiAnalysisStage() {
         when(pdfTextExtractor.extract(any())).thenReturn("text");
-        when(presidioClient.analyze(anyString(), anyString())).thenReturn(List.of());
+        when(presidioClient.analyze(anyString())).thenReturn(List.of());
         when(presidioClient.anonymize(anyString(), anyList()))
                 .thenReturn(new AnonymizationResult("anon text", Map.of()));
-        when(openAiContractAnalyzer.analyze(anyString(), anyString()))
+        when(openAiContractAnalyzer.analyze(anyString()))
                 .thenThrow(new RuntimeException("openai error"));
 
-        assertThatThrownBy(() -> service.analyze(InputStream.nullInputStream(), "en"))
+        assertThatThrownBy(() -> service.analyze(InputStream.nullInputStream()))
                 .isInstanceOf(ContractAnalysisException.class)
                 .satisfies(e -> assertThat(((ContractAnalysisException) e).getStage())
                         .isEqualTo(AI_ANALYSIS));

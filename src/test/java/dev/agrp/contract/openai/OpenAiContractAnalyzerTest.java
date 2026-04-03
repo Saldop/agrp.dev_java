@@ -47,7 +47,7 @@ class OpenAiContractAnalyzerTest {
     void analyze_parsesContractAnalysisResultFromResponse() {
         openAiMock.stubFor(post(urlEqualTo("/v1/chat/completions")).willReturn(okJson(fixture)));
 
-        OpenAiAnalysisResult result = analyzer.analyze("anonymized contract text", "en");
+        OpenAiAnalysisResult result = analyzer.analyze("anonymized contract text");
 
         assertThat(result.contractType()).isEqualTo("Lease Agreement");
         assertThat(result.participants()).containsExactly("<PERSON_1>", "<PERSON_2>");
@@ -62,7 +62,7 @@ class OpenAiContractAnalyzerTest {
     void analyze_sendsCorrectModelAndResponseFormat() {
         openAiMock.stubFor(post(urlEqualTo("/v1/chat/completions")).willReturn(okJson(fixture)));
 
-        analyzer.analyze("text", "en");
+        analyzer.analyze("text");
 
         openAiMock.verify(postRequestedFor(urlEqualTo("/v1/chat/completions"))
                 .withRequestBody(matchingJsonPath("$.model", equalTo("o4-mini")))
@@ -75,27 +75,21 @@ class OpenAiContractAnalyzerTest {
     void analyze_sendsAuthorizationHeader() {
         openAiMock.stubFor(post(urlEqualTo("/v1/chat/completions")).willReturn(okJson(fixture)));
 
-        analyzer.analyze("text", "en");
+        analyzer.analyze("text");
 
         openAiMock.verify(postRequestedFor(urlEqualTo("/v1/chat/completions"))
                 .withHeader("Authorization", equalTo("Bearer test-key")));
     }
 
     @Test
-    void analyze_loadsLanguageSpecificSystemPrompt() throws Exception {
+    void analyze_sendsSystemPromptFromEnFile() throws Exception {
         openAiMock.stubFor(post(urlEqualTo("/v1/chat/completions")).willReturn(okJson(fixture)));
 
-        analyzer.analyze("text", "en");
-        analyzer.analyze("text", "cs");
+        analyzer.analyze("text");
 
         List<ServeEvent> events = openAiMock.getAllServeEvents();
-        // events are in received order: index 0 = EN, index 1 = CS
-        String systemPromptEn = extractSystemMessage(events.get(0).getRequest().getBodyAsString());
-        String systemPromptCs = extractSystemMessage(events.get(1).getRequest().getBodyAsString());
-
-        assertThat(systemPromptEn).isNotBlank();
-        assertThat(systemPromptCs).isNotBlank();
-        assertThat(systemPromptEn).isNotEqualTo(systemPromptCs);
+        String systemPrompt = extractSystemMessage(events.get(0).getRequest().getBodyAsString());
+        assertThat(systemPrompt).isNotBlank();
     }
 
     private String extractSystemMessage(String requestBody) throws Exception {

@@ -64,7 +64,6 @@ class ContractApiTest {
     void analyze_returnsStructuredAnalysisForValidPdf() {
         given()
                 .multiPart("file", "contract.pdf", testPdf, "application/pdf")
-                .param("language", "en")
         .when()
                 .post("/contracts/analyze")
         .then()
@@ -79,20 +78,6 @@ class ContractApiTest {
 
         analyzerMock.verify(1, postRequestedFor(urlEqualTo("/analyze")));
         openAiMock.verify(1, postRequestedFor(urlEqualTo("/v1/chat/completions")));
-    }
-
-    @Test
-    void analyze_returns400ForUnsupportedLanguage() {
-        given()
-                .multiPart("file", "contract.pdf", testPdf, "application/pdf")
-                .param("language", "de")
-        .when()
-                .post("/contracts/analyze")
-        .then()
-                .statusCode(400);
-
-        analyzerMock.verify(0, postRequestedFor(urlEqualTo("/analyze")));
-        openAiMock.verify(0, postRequestedFor(urlEqualTo("/v1/chat/completions")));
     }
 
     private static byte[] buildTestPdf(String text) throws IOException {

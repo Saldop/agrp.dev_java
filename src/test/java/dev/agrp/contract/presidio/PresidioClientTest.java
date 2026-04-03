@@ -35,7 +35,7 @@ class PresidioClientTest {
         );
         analyzerMock.stubFor(post(urlEqualTo("/analyze")).willReturn(okJson(fixture)));
 
-        List<PresidioEntity> entities = client.analyze("some text with entities", "en");
+        List<PresidioEntity> entities = client.analyze("some text with entities");
 
         assertThat(entities).hasSize(2);
         assertThat(entities.get(0).entityType()).isEqualTo("PERSON");
@@ -48,11 +48,11 @@ class PresidioClientTest {
     void analyze_sendsTextLanguageAndEntitiesInBody() {
         analyzerMock.stubFor(post(urlEqualTo("/analyze")).willReturn(okJson("[]")));
 
-        client.analyze("hello world", "cs");
+        client.analyze("hello world");
 
         analyzerMock.verify(postRequestedFor(urlEqualTo("/analyze"))
                 .withRequestBody(matchingJsonPath("$.text", equalTo("hello world")))
-                .withRequestBody(matchingJsonPath("$.language", equalTo("cs")))
+                .withRequestBody(matchingJsonPath("$.language", equalTo("en")))
                 .withRequestBody(matchingJsonPath("$.entities")));
     }
 

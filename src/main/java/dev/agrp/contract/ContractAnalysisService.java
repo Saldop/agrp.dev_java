@@ -32,11 +32,11 @@ public class ContractAnalysisService {
         this.deAnonymizer = deAnonymizer;
     }
 
-    public ContractAnalysisResult analyze(InputStream pdf, String language) {
+    public ContractAnalysisResult analyze(InputStream pdf) {
         String text = extractText(pdf);
-        List<PresidioEntity> entities = detectEntities(text, language);
+        List<PresidioEntity> entities = detectEntities(text);
         AnonymizationResult anonymization = anonymize(text, entities);
-        OpenAiAnalysisResult aiResult = analyzeWithAi(anonymization.anonymizedText(), language);
+        OpenAiAnalysisResult aiResult = analyzeWithAi(anonymization.anonymizedText());
         List<String> participants = deAnonymizer.deAnonymizeParticipants(
                 aiResult.participants(), anonymization.tokenToReal());
         return new ContractAnalysisResult(aiResult.contractType(), participants, aiResult.issues());
@@ -51,9 +51,9 @@ public class ContractAnalysisService {
         }
     }
 
-    private List<PresidioEntity> detectEntities(String text, String language) {
+    private List<PresidioEntity> detectEntities(String text) {
         try {
-            return presidioClient.analyze(text, language);
+            return presidioClient.analyze(text);
         } catch (Exception e) {
             throw new ContractAnalysisException(
                     ContractAnalysisException.Stage.PII_ANALYSIS, "Failed to detect PII entities", e);
@@ -69,9 +69,9 @@ public class ContractAnalysisService {
         }
     }
 
-    private OpenAiAnalysisResult analyzeWithAi(String anonymizedText, String language) {
+    private OpenAiAnalysisResult analyzeWithAi(String anonymizedText) {
         try {
-            return openAiContractAnalyzer.analyze(anonymizedText, language);
+            return openAiContractAnalyzer.analyze(anonymizedText);
         } catch (Exception e) {
             throw new ContractAnalysisException(
                     ContractAnalysisException.Stage.AI_ANALYSIS, "Failed to analyze contract with AI", e);

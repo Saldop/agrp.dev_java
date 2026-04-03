@@ -36,8 +36,8 @@ public class OpenAiContractAnalyzer {
         this.objectMapper = objectMapper;
     }
 
-    public OpenAiAnalysisResult analyze(String anonymizedText, String language) {
-        String systemPrompt = loadPrompt(language);
+    public OpenAiAnalysisResult analyze(String anonymizedText) {
+        String systemPrompt = loadPrompt();
         Map<String, Object> request = buildRequest(anonymizedText, systemPrompt);
 
         String rawResponse = restClient.post()
@@ -50,13 +50,12 @@ public class OpenAiContractAnalyzer {
         return parseResponse(rawResponse);
     }
 
-    private String loadPrompt(String language) {
-        Resource resource = resourceLoader.getResource(
-                "classpath:prompts/contract-analysis-" + language + ".txt");
+    private String loadPrompt() {
+        Resource resource = resourceLoader.getResource("classpath:prompts/contract-analysis-en.txt");
         try {
             return resource.getContentAsString(StandardCharsets.UTF_8);
         } catch (IOException e) {
-            throw new IllegalArgumentException("No prompt found for language: " + language, e);
+            throw new IllegalArgumentException("Prompt file not found", e);
         }
     }
 

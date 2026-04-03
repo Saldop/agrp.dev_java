@@ -23,11 +23,11 @@ public class PresidioClient {
                 .build();
     }
 
-    public List<PresidioEntity> analyze(String text, String language) {
+    public List<PresidioEntity> analyze(String text) {
         return analyzerClient.post()
                 .uri("/analyze")
                 .contentType(MediaType.APPLICATION_JSON)
-                .body(new PresidioAnalyzeRequest(text, language, DEFAULT_ENTITIES))
+                .body(new PresidioAnalyzeRequest(text, "en", DEFAULT_ENTITIES))
                 .retrieve()
                 .body(new ParameterizedTypeReference<>() {});
     }
