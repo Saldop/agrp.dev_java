@@ -28,7 +28,7 @@ class HealthApiTest {
         given()
             .accept("application/json")
         .when()
-            .get("/health")
+            .get("/actuator/health")
         .then()
             .statusCode(200)
             .body("status", equalTo("UP"));
