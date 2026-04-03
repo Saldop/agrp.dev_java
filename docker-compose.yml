@@ -13,3 +13,7 @@ services:
     image: mcr.microsoft.com/presidio-analyzer:2.2.362
     ports:
       - "5002:3000"
+    environment:
+      - RECOGNIZER_REGISTRY_CONF_FILE=/usr/conf/recognizers.yaml
+    volumes:
+      - ./presidio/recognizers.yaml:/usr/conf/recognizers.yaml:ro

@@ -33,7 +33,7 @@ public class PresidioClient {
         return analyzerClient.post()
                 .uri("/analyze")
                 .contentType(MediaType.APPLICATION_JSON)
-                .body(new PresidioAnalyzeRequest(text, "en", DEFAULT_ENTITIES, 0.7))
+                .body(new PresidioAnalyzeRequest(text, "en", DEFAULT_ENTITIES, 0.5))
                 .retrieve()
                 .body(new ParameterizedTypeReference<>() {});
     }
