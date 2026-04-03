@@ -12,7 +12,13 @@ public class PresidioClient {
 
     private static final List<String> DEFAULT_ENTITIES = List.of(
             "PERSON", "LOCATION", "ORGANIZATION", "EMAIL_ADDRESS",
-            "PHONE_NUMBER", "IBAN_CODE", "CREDIT_CARD", "DATE_TIME", "URL", "NRP"
+            "PHONE_NUMBER", "IBAN_CODE", "CREDIT_CARD", "URL", "NRP"
+    );
+
+    // Contract role words that Presidio misidentifies as PERSON entities
+    private static final Set<String> IGNORED_TERMS = Set.of(
+            "landlord", "tenant", "lessee", "lessor", "buyer", "seller",
+            "employer", "employee", "contractor", "client", "supplier", "vendor"
     );
 
     private final RestClient analyzerClient;
@@ -24,12 +30,15 @@ public class PresidioClient {
     }
 
     public List<PresidioEntity> analyze(String text) {
-        return analyzerClient.post()
+        List<PresidioEntity> entities = analyzerClient.post()
                 .uri("/analyze")
                 .contentType(MediaType.APPLICATION_JSON)
-                .body(new PresidioAnalyzeRequest(text, "en", DEFAULT_ENTITIES))
+                .body(new PresidioAnalyzeRequest(text, "en", DEFAULT_ENTITIES, 0.7))
                 .retrieve()
                 .body(new ParameterizedTypeReference<>() {});
+        return entities.stream()
+                .filter(e -> !IGNORED_TERMS.contains(text.substring(e.start(), e.end()).toLowerCase()))
+                .toList();
     }
 
     /**
