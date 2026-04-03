@@ -3,7 +3,7 @@ package dev.agrp.contract;
 public class ContractAnalysisException extends RuntimeException {
 
     public enum Stage {
-        PDF_EXTRACTION, PII_ANALYSIS, PII_ANONYMIZATION, AI_ANALYSIS
+        PDF_EXTRACTION, PII_ANALYSIS, AI_ANALYSIS
     }
 
     private final Stage stage;
