@@ -59,7 +59,7 @@ class ContractControllerTest {
 
         mockMvc.perform(multipart("/contracts/analyze").file(PDF_FILE))
                 .andExpect(status().isUnprocessableEntity())
-                .andExpect(jsonPath("$.error").value("bad pdf"));
+                .andExpect(jsonPath("$.error").value("Could not extract text from the uploaded PDF."));
     }
 
     @Test
@@ -69,7 +69,7 @@ class ContractControllerTest {
 
         mockMvc.perform(multipart("/contracts/analyze").file(PDF_FILE))
                 .andExpect(status().isBadGateway())
-                .andExpect(jsonPath("$.error").value("presidio down"));
+                .andExpect(jsonPath("$.error").value("Failed to process document with the PII service."));
     }
 
     @Test
@@ -79,6 +79,6 @@ class ContractControllerTest {
 
         mockMvc.perform(multipart("/contracts/analyze").file(PDF_FILE))
                 .andExpect(status().isBadGateway())
-                .andExpect(jsonPath("$.error").value("openai error"));
+                .andExpect(jsonPath("$.error").value("Failed to analyze the contract. Please try again later."));
     }
 }

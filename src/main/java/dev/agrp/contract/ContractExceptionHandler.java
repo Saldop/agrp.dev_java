@@ -7,7 +7,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
-@RestControllerAdvice(basePackageClasses = ContractController.class)
+@RestControllerAdvice
 public class ContractExceptionHandler {
 
     private static final Logger log = LoggerFactory.getLogger(ContractExceptionHandler.class);
@@ -19,6 +19,12 @@ public class ContractExceptionHandler {
             default -> HttpStatus.BAD_GATEWAY;
         };
         log.error("Contract analysis failed at stage {}: {}", e.getStage(), e.getMessage(), e);
-        return ResponseEntity.status(status).body(new ErrorResponse(e.getMessage()));
+        String userMessage = switch (e.getStage()) {
+            case PDF_EXTRACTION  -> "Could not extract text from the uploaded PDF.";
+            case PII_ANALYSIS,
+                 PII_ANONYMIZATION -> "Failed to process document with the PII service.";
+            case AI_ANALYSIS    -> "Failed to analyze the contract. Please try again later.";
+        };
+        return ResponseEntity.status(status).body(new ErrorResponse(userMessage));
     }
 }
