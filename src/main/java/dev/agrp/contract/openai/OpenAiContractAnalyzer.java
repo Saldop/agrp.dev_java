@@ -13,7 +13,6 @@ import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.time.Duration;
 import java.util.List;
-import java.util.Map;
 
 @Component
 public class OpenAiContractAnalyzer {
@@ -47,7 +46,7 @@ public class OpenAiContractAnalyzer {
     }
 
     public OpenAiAnalysisResult analyze(String anonymizedText) {
-        Map<String, Object> request = buildRequest(anonymizedText);
+        ChatRequest request = buildRequest(anonymizedText);
 
         String rawResponse = restClient.post()
                 .uri("/v1/chat/completions")
@@ -76,20 +75,16 @@ public class OpenAiContractAnalyzer {
         }
     }
 
-    private Map<String, Object> buildRequest(String text) {
-        return Map.of(
-                "model", properties.model(),
-                "messages", List.of(
-                        Map.of("role", "system", "content", systemPrompt),
-                        Map.of("role", "user", "content", text)
+    private ChatRequest buildRequest(String text) {
+        return new ChatRequest(
+                properties.model(),
+                List.of(
+                        new ChatRequest.Message("system", systemPrompt),
+                        new ChatRequest.Message("user", text)
                 ),
-                "response_format", Map.of(
-                        "type", "json_schema",
-                        "json_schema", Map.of(
-                                "name", "contract_analysis",
-                                "strict", true,
-                                "schema", schema
-                        )
+                new ChatRequest.ResponseFormat(
+                        "json_schema",
+                        new ChatRequest.ResponseFormat.JsonSchema("contract_analysis", true, schema)
                 )
         );
     }
