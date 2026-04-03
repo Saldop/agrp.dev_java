@@ -1,0 +1,26 @@
+{
+  "type": "object",
+  "properties": {
+    "contractType": { "type": "string" },
+    "participants": {
+      "type": "array",
+      "items": { "type": "string" }
+    },
+    "issues": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "description":    { "type": "string" },
+          "severity":       { "type": "string", "enum": ["LOW", "MEDIUM", "HIGH"] },
+          "originalClause": { "type": "string" },
+          "recommendation": { "type": "string" }
+        },
+        "required": ["description", "severity", "originalClause", "recommendation"],
+        "additionalProperties": false
+      }
+    }
+  },
+  "required": ["contractType", "participants", "issues"],
+  "additionalProperties": false
+}

@@ -19,6 +19,7 @@ public class OpenAiContractAnalyzer {
     private final RestClient restClient;
     private final OpenAiProperties properties;
     private final String systemPrompt;
+    private final JsonNode schema;
     private final ObjectMapper objectMapper;
 
     public OpenAiContractAnalyzer(
@@ -34,7 +35,8 @@ public class OpenAiContractAnalyzer {
                 .defaultHeader("Authorization", "Bearer " + properties.apiKey())
                 .build();
         this.properties = properties;
-        this.systemPrompt = loadPrompt(resourceLoader);
+        this.systemPrompt = loadResource(resourceLoader, "classpath:prompts/contract-analysis-en.txt");
+        this.schema = loadSchema(resourceLoader, objectMapper);
         this.objectMapper = objectMapper;
     }
 
@@ -51,12 +53,20 @@ public class OpenAiContractAnalyzer {
         return parseResponse(rawResponse);
     }
 
-    private static String loadPrompt(ResourceLoader resourceLoader) {
-        var resource = resourceLoader.getResource("classpath:prompts/contract-analysis-en.txt");
+    private static String loadResource(ResourceLoader resourceLoader, String location) {
         try {
-            return resource.getContentAsString(StandardCharsets.UTF_8);
+            return resourceLoader.getResource(location).getContentAsString(StandardCharsets.UTF_8);
         } catch (IOException e) {
-            throw new IllegalArgumentException("Prompt file not found", e);
+            throw new IllegalArgumentException("Resource not found: " + location, e);
+        }
+    }
+
+    private static JsonNode loadSchema(ResourceLoader resourceLoader, ObjectMapper objectMapper) {
+        var resource = resourceLoader.getResource("classpath:prompts/contract-analysis-schema.json");
+        try {
+            return objectMapper.readTree(resource.getInputStream());
+        } catch (IOException e) {
+            throw new IllegalArgumentException("Schema file not found", e);
         }
     }
 
@@ -72,7 +82,7 @@ public class OpenAiContractAnalyzer {
                         "json_schema", Map.of(
                                 "name", "contract_analysis",
                                 "strict", true,
-                                "schema", contractAnalysisSchema()
+                                "schema", schema
                         )
                 )
         );
@@ -90,33 +100,5 @@ public class OpenAiContractAnalyzer {
         } catch (JsonProcessingException e) {
             throw new RuntimeException("Failed to parse OpenAI response", e);
         }
-    }
-
-    private static Map<String, Object> contractAnalysisSchema() {
-        return Map.of(
-                "type", "object",
-                "properties", Map.of(
-                        "contractType", Map.of("type", "string"),
-                        "participants", Map.of("type", "array", "items", Map.of("type", "string")),
-                        "issues", Map.of(
-                                "type", "array",
-                                "items", Map.of(
-                                        "type", "object",
-                                        "properties", Map.of(
-                                                "description", Map.of("type", "string"),
-                                                "severity", Map.of("type", "string",
-                                                        "enum", List.of("LOW", "MEDIUM", "HIGH")),
-                                                "originalClause", Map.of("type", "string"),
-                                                "recommendation", Map.of("type", "string")
-                                        ),
-                                        "required", List.of("description", "severity",
-                                                "originalClause", "recommendation"),
-                                        "additionalProperties", false
-                                )
-                        )
-                ),
-                "required", List.of("contractType", "participants", "issues"),
-                "additionalProperties", false
-        );
     }
 }
