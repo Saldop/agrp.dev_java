@@ -43,8 +43,6 @@ public class ContractController {
             @Parameter(description = "PDF contract file", required = true)
             @RequestPart("file") MultipartFile file) throws IOException {
 
-        ContractAnalysisResult result = service.analyze(file.getInputStream());
-        return ResponseEntity.ok(new ContractAnalysisResponse(
-                result.contractType(), result.participants(), result.issues()));
+        return ResponseEntity.ok(service.analyze(file.getInputStream()));
     }
 }

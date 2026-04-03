@@ -32,7 +32,7 @@ class ContractControllerTest {
     @Test
     void analyze_returns200WithAnalysisResult() throws Exception {
         ContractIssue issue = new ContractIssue("Vague clause", Severity.HIGH, "original", "fix it");
-        ContractAnalysisResult result = new ContractAnalysisResult(
+        ContractAnalysisResponse result = new ContractAnalysisResponse(
                 "Lease Agreement", List.of("Jan Novák"), List.of(issue));
         when(service.analyze(any())).thenReturn(result);
 

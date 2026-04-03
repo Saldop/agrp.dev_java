@@ -2,7 +2,6 @@ package dev.agrp.contract;
 
 import dev.agrp.contract.openai.OpenAiAnalysisResult;
 import dev.agrp.contract.openai.OpenAiContractAnalyzer;
-import dev.agrp.contract.pdf.PdfExtractionException;
 import dev.agrp.contract.pdf.PdfTextExtractor;
 import dev.agrp.contract.presidio.AnonymizationResult;
 import dev.agrp.contract.presidio.DeAnonymizer;
@@ -32,14 +31,14 @@ public class ContractAnalysisService {
         this.deAnonymizer = deAnonymizer;
     }
 
-    public ContractAnalysisResult analyze(InputStream pdf) {
+    public ContractAnalysisResponse analyze(InputStream pdf) {
         String text = extractText(pdf);
         List<PresidioEntity> entities = detectEntities(text);
         AnonymizationResult anonymization = anonymize(text, entities);
         OpenAiAnalysisResult aiResult = analyzeWithAi(anonymization.anonymizedText());
         List<String> participants = deAnonymizer.deAnonymizeParticipants(
                 aiResult.participants(), anonymization.tokenToReal());
-        return new ContractAnalysisResult(aiResult.contractType(), participants, aiResult.issues());
+        return new ContractAnalysisResponse(aiResult.contractType(), participants, aiResult.issues());
     }
 
     private String extractText(InputStream pdf) {

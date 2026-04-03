@@ -55,7 +55,7 @@ class ContractAnalysisServiceTest {
         when(deAnonymizer.deAnonymizeParticipants(List.of("<PERSON_1>"),
                 Map.of("PERSON_1", "Jan Novák"))).thenReturn(deAnonymizedParticipants);
 
-        ContractAnalysisResult result = service.analyze(InputStream.nullInputStream());
+        ContractAnalysisResponse result = service.analyze(InputStream.nullInputStream());
 
         assertThat(result.contractType()).isEqualTo("Lease Agreement");
         assertThat(result.participants()).containsExactly("Jan Novák");
