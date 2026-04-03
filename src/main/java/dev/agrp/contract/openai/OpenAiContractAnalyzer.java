@@ -3,7 +3,6 @@ package dev.agrp.contract.openai;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.springframework.core.io.Resource;
 import org.springframework.core.io.ResourceLoader;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Component;
@@ -19,7 +18,7 @@ public class OpenAiContractAnalyzer {
 
     private final RestClient restClient;
     private final OpenAiProperties properties;
-    private final ResourceLoader resourceLoader;
+    private final String systemPrompt;
     private final ObjectMapper objectMapper;
 
     public OpenAiContractAnalyzer(
@@ -35,13 +34,12 @@ public class OpenAiContractAnalyzer {
                 .defaultHeader("Authorization", "Bearer " + properties.apiKey())
                 .build();
         this.properties = properties;
-        this.resourceLoader = resourceLoader;
+        this.systemPrompt = loadPrompt(resourceLoader);
         this.objectMapper = objectMapper;
     }
 
     public OpenAiAnalysisResult analyze(String anonymizedText) {
-        String systemPrompt = loadPrompt();
-        Map<String, Object> request = buildRequest(anonymizedText, systemPrompt);
+        Map<String, Object> request = buildRequest(anonymizedText);
 
         String rawResponse = restClient.post()
                 .uri("/v1/chat/completions")
@@ -53,8 +51,8 @@ public class OpenAiContractAnalyzer {
         return parseResponse(rawResponse);
     }
 
-    private String loadPrompt() {
-        Resource resource = resourceLoader.getResource("classpath:prompts/contract-analysis-en.txt");
+    private static String loadPrompt(ResourceLoader resourceLoader) {
+        var resource = resourceLoader.getResource("classpath:prompts/contract-analysis-en.txt");
         try {
             return resource.getContentAsString(StandardCharsets.UTF_8);
         } catch (IOException e) {
@@ -62,7 +60,7 @@ public class OpenAiContractAnalyzer {
         }
     }
 
-    private Map<String, Object> buildRequest(String text, String systemPrompt) {
+    private Map<String, Object> buildRequest(String text) {
         return Map.of(
                 "model", properties.model(),
                 "messages", List.of(
