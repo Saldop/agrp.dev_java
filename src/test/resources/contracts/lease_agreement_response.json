@@ -1,0 +1,51 @@
+{
+  "contractType": "Lease Agreement",
+  "participants": [
+    "ABC Reality s.r.o.",
+    "Jan Novák"
+  ],
+  "issues": [
+    {
+      "description": "The Landlord can unilaterally adjust the amount of rent and service charges “in the event of changes in market conditions or costs, including repeatedly during the year,” without any objective criteria, limits on frequency, notice period, or cap on increases. This grants excessive discretion and uncertainty to the Landlord.",
+      "severity": "MEDIUM",
+      "originalClause": "The Landlord is entitled to unilaterally adjust the amount of service charges and rent in the event of changes in market conditions or costs, including repeatedly during the year.",
+      "recommendation": "Specify clear objective criteria for adjustments (e.g. indexation formula or percentage cap), limit the frequency of adjustments (e.g. once per year), and require written notice to the Tenant at least 60 days before any change takes effect."
+    },
+    {
+      "description": "The Landlord may offset the security deposit against any of its claims “including disputed or not yet quantified claims,” allowing deduction without verification or Tenant’s opportunity to dispute.",
+      "severity": "MEDIUM",
+      "originalClause": "The Landlord is entitled to offset against the deposit any of its claims arising in connection with the lease, including disputed or not yet quantified claims.",
+      "recommendation": "Restrict offset to claims that have been finally determined (e.g. by agreement or court judgment), and require the Landlord to provide the Tenant with an itemized statement of deductions, along with supporting documentation, before applying any deposit funds."
+    },
+    {
+      "description": "The Landlord may enter the Apartment “upon prior notice,” but notice may be given on the same day as entry. This gives the Tenant virtually no meaningful notice and lacks a minimum lead time.",
+      "severity": "MEDIUM",
+      "originalClause": "The Landlord is entitled to enter the Apartment for the purpose of inspecting its condition upon prior notice, whereby such notice may also be given on the same day as the entry.",
+      "recommendation": "Require the Landlord to give at least 24 or 48 hours’ written notice (except in emergencies), specify permitted entry hours (e.g. between 9 AM and 6 PM), and limit inspections to a reasonable frequency (e.g. no more than once per quarter)."
+    },
+    {
+      "description": "Tenant’s right to terminate the Agreement is three months, while the Landlord may terminate on one month’s notice for any breach, even repeated minor breaches. This imbalance favors the Landlord and penalizes the Tenant excessively.",
+      "severity": "MEDIUM",
+      "originalClause": "The Tenant may terminate this Agreement with a three-month notice period.\nThe Landlord is entitled to terminate this Agreement with a one-month notice period if the Tenant breaches their obligations, even repeatedly in a less serious manner.",
+      "recommendation": "Align notice periods for both parties (e.g. three months), or limit the Landlord’s one-month notice right to material or non-curable breaches only, and require written notice specifying the breach and a reasonable cure period before termination."
+    },
+    {
+      "description": "The Landlord may revoke prior written consent to a sublease “at any time without stating a reason,” creating uncertainty and depriving the Tenant of any enforceable subletting right.",
+      "severity": "MEDIUM",
+      "originalClause": "The Landlord may revoke such consent at any time without stating a reason.",
+      "recommendation": "Permit revocation only for objectively defined reasons (e.g. breach of lease terms by subtenant), require reasonable advance notice (e.g. 30 days), and allow the Tenant the opportunity to propose a replacement subtenant."
+    },
+    {
+      "description": "The contractual penalty for late payment is 0.5% of the outstanding amount per day, and the Landlord may also claim full damages. This could lead to an excessive penalty (e.g. ~15% per month) and double recovery.",
+      "severity": "HIGH",
+      "originalClause": "In the event of delay in payment of rent, the Tenant shall pay a contractual penalty in the amount of 0.5% of the outstanding amount for each day of delay.\nThe application of the contractual penalty shall not affect the Landlord’s right to claim damages in full.",
+      "recommendation": "Cap the daily penalty at a reasonable statutory rate or a maximum aggregate percentage (e.g. 0.05% per day up to 5% of the overdue amount), and clarify that the penalty is the sole remedy for late payment or require mitigation of damages to avoid double recovery."
+    },
+    {
+      "description": "The Agreement sets the monthly rent and service charges but does not specify a due date (e.g. day of the month) or payment method, creating ambiguity about when and how payment must be made.",
+      "severity": "MEDIUM",
+      "originalClause": "The monthly rent amounts to CZK 18,000. Advance payments for services amount to CZK 4,000 per month.",
+      "recommendation": "Include a clause stating the exact due date (e.g. “due on the first business day of each calendar month”) and acceptable payment methods (e.g. bank transfer to specified account), as well as consequences of non-payment."
+    }
+  ]
+}

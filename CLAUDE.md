@@ -2,6 +2,23 @@
 
 This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
 
+## Running with Docker
+
+The easiest way to run the full stack (app + Presidio):
+
+```bash
+# Copy and fill in your OpenAI API key
+cp .env.example .env   # then edit .env
+
+# Build and start everything
+docker-compose up --build
+```
+
+Required environment variable in `.env`:
+```
+OPENAI_API_KEY=sk-...
+```
+
 ## Project Overview
 
 Spring Boot 3.4.4 REST API written in Java 21, built with Maven.
@@ -35,7 +52,7 @@ Contract analysis pipeline:
 
 1. **Upload** — user uploads a PDF contract (`POST /contracts/analyze`)
 2. **Extract** — PDFBox extracts plain text from the PDF
-3. **Anonymize** — text is sent to Presidio Analyzer (detect PII) then Presidio Anonymizer (replace PII with tokens like `<PERSON_1>`); the token→real-value mapping is retained in memory
+3. **Anonymize** — text is sent to Presidio Analyzer to detect PII entities (names, organizations, locations); the app then replaces them locally with numbered tokens like `<PERSON_1>`, retaining the token→real-value mapping in memory
 4. **Analyze** — anonymized text is sent to an OpenAI reasoning model (structured output); the model returns:
    - contract type
    - participants (anonymized tokens)
@@ -47,9 +64,8 @@ Contract analysis pipeline:
 
 | Service | Local URL | Purpose |
 |---------|-----------|---------|
-| Presidio Analyzer | `http://localhost:5002` | PII detection |
-| Presidio Anonymizer | `http://localhost:5001` | PII replacement |
-| OpenAI API | `https://api.openai.com` | Contract analysis (reasoning model) |
+| Presidio Analyzer | `http://localhost:5002` | PII entity detection |
+| OpenAI API | `https://api.openai.com` | Contract analysis via o4-mini (requires `OPENAI_API_KEY`) |
 
 ## Architecture
 
@@ -59,22 +75,26 @@ src/main/java/dev/agrp/
 ├── health/
 │   ├── HealthController.java     # GET /health → {"status":"UP"}
 │   └── HealthResponse.java       # Java 21 record response body
-└── contract/                     # (planned)
+└── contract/
     ├── ContractController.java   # POST /contracts/analyze
+    ├── ContractAnalysisService.java
     ├── ContractAnalysisResponse.java
+    ├── ContractExceptionHandler.java
     ├── pdf/                      # PDFBox text extraction
-    ├── presidio/                 # Presidio Analyzer + Anonymizer clients
-    └── openai/                   # OpenAI structured output client
+    ├── presidio/                 # Presidio PII detection + local anonymization
+    └── openai/                   # OpenAI o4-mini structured output client
 
 src/test/java/dev/agrp/
 ├── health/
 │   └── HealthControllerTest.java # @WebMvcTest unit test (web layer only)
-├── contract/                     # (planned)
+├── contract/                     # Unit tests per component (Mockito / WireMock)
 └── api/
     ├── HealthApiTest.java        # @SpringBootTest + RestAssured (full stack)
-    └── ContractApiTest.java      # (planned) full-stack contract pipeline test
+    └── ContractApiTest.java      # Full-stack contract pipeline test (WireMock)
 
-src/test/resources/               # Test PDFs go here (not included in production JAR)
+src/test/resources/
+├── contracts/                    # Sample PDFs + example responses
+└── fixtures/                     # WireMock JSON fixtures
 ```
 
 ## Key URLs (local)
@@ -82,10 +102,19 @@ src/test/resources/               # Test PDFs go here (not included in productio
 | URL | Description |
 |-----|-------------|
 | `http://localhost:8080/health` | Custom health endpoint |
-| `http://localhost:8080/contracts/analyze` | Contract analysis endpoint (planned) |
+| `http://localhost:8080/contracts/analyze` | Contract analysis endpoint |
 | `http://localhost:8080/swagger-ui.html` | Swagger UI |
 | `http://localhost:8080/v3/api-docs` | OpenAPI JSON spec |
 | `http://localhost:8080/actuator/health` | Spring Boot Actuator health |
+
+## Example Output
+
+To see what the application produces without running it, see `src/test/resources/contracts/`:
+
+| Contract | Response |
+|----------|----------|
+| `lease_agreement_en.pdf` | `lease_agreement_response.json` |
+| `employment_agreement_en.pdf` | `empoyment_agreement_response.json` |
 
 ## Testing Strategy
 

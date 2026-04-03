@@ -1,0 +1,75 @@
+{
+  "contractType": "Employment Agreement",
+  "participants": [
+    "TechSolutions Ltd.",
+    "John Smith"
+  ],
+  "issues": [
+    {
+      "description": "The clause allows the Employer to assign any tasks, including those outside the primary job description, creating an unclear and overly broad scope of duties.",
+      "severity": "MEDIUM",
+      "originalClause": "The Employee agrees to perform any tasks reasonably assigned by the Employer, including tasks outside the primary job description if required for business needs.",
+      "recommendation": "Specify and limit additional duties to defined categories or require a formal amendment process for significant changes to the job description."
+    },
+    {
+      "description": "The Employee may be required to work additional hours without guaranteed compensation, risking unpaid overtime.",
+      "severity": "MEDIUM",
+      "originalClause": "The Employee agrees that additional hours may be required to meet business demands, without additional compensation unless explicitly approved by the Employer.",
+      "recommendation": "Define a clear overtime policy that either provides for overtime pay or a capped maximum of unpaid extra hours, and specify the approval process for paid overtime."
+    },
+    {
+      "description": "The Employer can unilaterally adjust the Employee’s compensation based on vague criteria, creating uncertainty for the Employee.",
+      "severity": "MEDIUM",
+      "originalClause": "The Employer reserves the right to adjust compensation based on performance evaluations and business conditions.",
+      "recommendation": "Require mutual agreement or written notice with a defined notice period before any salary adjustment, and clarify objective criteria for performance-based changes."
+    },
+    {
+      "description": "Bonus eligibility and amount are entirely at the Employer’s discretion, lacking any defined criteria or transparency.",
+      "severity": "LOW",
+      "originalClause": "The Employee may be eligible for a discretionary bonus based on performance. The Employer has sole discretion in determining eligibility and amount of any bonus.",
+      "recommendation": "Establish clear eligibility criteria, performance metrics, and a bonus calculation method to ensure transparency and fairness."
+    },
+    {
+      "description": "During the probation period, the Employer may terminate employment immediately without notice, offering no protection to the Employee.",
+      "severity": "LOW",
+      "originalClause": "During this period, the Employer may terminate employment at any time with immediate effect.",
+      "recommendation": "Include a minimum notice period (e.g., one week) during probation or specify permissible grounds for immediate termination."
+    },
+    {
+      "description": "The Employer may terminate immediately for breaches including \"minor or repeated issues,\" which is overly broad and may be unfairly applied.",
+      "severity": "MEDIUM",
+      "originalClause": "The Employer may terminate the Agreement immediately in case of breach of duties, including minor or repeated issues.",
+      "recommendation": "Limit immediate termination to material breaches or serious misconduct and define what constitutes a minor vs. material breach."
+    },
+    {
+      "description": "The IP clause assigns ownership of all work, even that created outside working hours, without carve-outs for personal projects.",
+      "severity": "LOW",
+      "originalClause": "All intellectual property created by the Employee during employment shall belong to the Employer. This includes any work created outside working hours that relates to the Employer’s business.",
+      "recommendation": "Clarify that personal projects unrelated to the Employer’s business remain the Employee’s property and define what constitutes \"related to the Employer’s business.\""
+    },
+    {
+      "description": "The non-compete restriction of 12 months post-termination with no compensation is broad, potentially unenforceable and disproportionately restricts the Employee's future employment.",
+      "severity": "HIGH",
+      "originalClause": "The Employee agrees not to engage in any competing business during employment and for a period of 12 months after termination. The Employer is not obligated to provide compensation during the non-compete period.",
+      "recommendation": "Shorten the non-compete period to a legally permissible term (e.g., 3–6 months), limit its geographic and functional scope, and provide reasonable compensation during the restraint period."
+    },
+    {
+      "description": "The confidentiality obligation is unlimited in time for all information, which may be excessive for non-trade-secret information.",
+      "severity": "MEDIUM",
+      "originalClause": "The Employee shall not disclose any confidential information during or after employment. This obligation is unlimited in time.",
+      "recommendation": "Differentiate between trade secrets (which may be protected indefinitely) and other confidential information, setting a reasonable time limit (e.g., 2–5 years) for the latter."
+    },
+    {
+      "description": "The Employer may unilaterally amend internal policies at any time, binding the Employee to new obligations without consent.",
+      "severity": "HIGH",
+      "originalClause": "The Employer may amend internal policies at any time, and such policies shall be binding on the Employee.",
+      "recommendation": "Require that significant policy changes affecting employment terms be subject to Employee notice and consent, or include a right for the Employee to terminate if changes are materially adverse."
+    },
+    {
+      "description": "The Agreement lacks a governing law, jurisdiction, or dispute resolution clause, leaving uncertainty in the event of a dispute.",
+      "severity": "MEDIUM",
+      "originalClause": "(No governing law or jurisdiction clause is present.)",
+      "recommendation": "Add a clause specifying the applicable governing law (e.g., English law) and a dispute resolution mechanism (e.g., arbitration or courts in a defined jurisdiction)."
+    }
+  ]
+}
