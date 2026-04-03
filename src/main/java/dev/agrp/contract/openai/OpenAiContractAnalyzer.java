@@ -80,7 +80,7 @@ public class OpenAiContractAnalyzer {
                 properties.model(),
                 List.of(
                         new ChatRequest.Message("system", systemPrompt),
-                        new ChatRequest.Message("user", text)
+                        new ChatRequest.Message("user", "<contract_text>\n" + text + "\n</contract_text>")
                 ),
                 new ChatRequest.ResponseFormat(
                         "json_schema",
