@@ -53,6 +53,15 @@ public class PresidioClient {
                 .sorted(Comparator.comparingInt(PresidioEntity::start))
                 .toList();
 
+        for (int i = 0; i < sorted.size() - 1; i++) {
+            if (sorted.get(i).end() > sorted.get(i + 1).start()) {
+                throw new IllegalStateException(
+                        "Overlapping entity ranges from Presidio: [" + sorted.get(i).start() +
+                        "," + sorted.get(i).end() + ") overlaps [" + sorted.get(i + 1).start() +
+                        "," + sorted.get(i + 1).end() + ")");
+            }
+        }
+
         Map<String, Integer> typeCounters = new HashMap<>();
         Map<String, String> tokenToReal = new LinkedHashMap<>();
         List<EntityToken> replacements = new ArrayList<>();
