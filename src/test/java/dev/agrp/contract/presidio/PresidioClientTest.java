@@ -37,13 +37,16 @@ class PresidioClientTest {
         );
         analyzerMock.stubFor(post(urlEqualTo("/analyze")).willReturn(okJson(fixture)));
 
-        List<PresidioEntity> entities = client.analyze("some text with entities");
+        // Text matches the offsets in fixtures/presidio-analyze-response.json:
+        // PERSON [11,20) = "Jan Novák", LOCATION [35,40) = "Praha"
+        List<PresidioEntity> entities = client.analyze("My name is Jan Novák and I live in Praha.");
 
         assertThat(entities).hasSize(2);
         assertThat(entities.get(0).entityType()).isEqualTo("PERSON");
         assertThat(entities.get(0).start()).isEqualTo(11);
         assertThat(entities.get(0).end()).isEqualTo(20);
         assertThat(entities.get(1).entityType()).isEqualTo("LOCATION");
+        assertThat(entities.get(1).start()).isEqualTo(35);
     }
 
     @Test
