@@ -24,6 +24,10 @@ springdoc:
   api-docs:
     path: /v3/api-docs
 
+logging:
+  level:
+    dev.agrp: DEBUG
+
 presidio:
   analyzer-url: ${PRESIDIO_ANALYZER_URL:http://localhost:5002}
 
