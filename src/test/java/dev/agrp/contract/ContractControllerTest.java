@@ -58,7 +58,8 @@ class ContractControllerTest {
                 new ContractAnalysisException(PDF_EXTRACTION, "bad pdf", null));
 
         mockMvc.perform(multipart("/contracts/analyze").file(PDF_FILE))
-                .andExpect(status().isUnprocessableEntity());
+                .andExpect(status().isUnprocessableEntity())
+                .andExpect(jsonPath("$.error").value("bad pdf"));
     }
 
     @Test
@@ -67,7 +68,8 @@ class ContractControllerTest {
                 new ContractAnalysisException(PII_ANALYSIS, "presidio down", null));
 
         mockMvc.perform(multipart("/contracts/analyze").file(PDF_FILE))
-                .andExpect(status().isBadGateway());
+                .andExpect(status().isBadGateway())
+                .andExpect(jsonPath("$.error").value("presidio down"));
     }
 
     @Test
@@ -76,6 +78,7 @@ class ContractControllerTest {
                 new ContractAnalysisException(AI_ANALYSIS, "openai error", null));
 
         mockMvc.perform(multipart("/contracts/analyze").file(PDF_FILE))
-                .andExpect(status().isBadGateway());
+                .andExpect(status().isBadGateway())
+                .andExpect(jsonPath("$.error").value("openai error"));
     }
 }

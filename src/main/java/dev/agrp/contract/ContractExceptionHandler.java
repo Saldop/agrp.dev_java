@@ -13,12 +13,12 @@ public class ContractExceptionHandler {
     private static final Logger log = LoggerFactory.getLogger(ContractExceptionHandler.class);
 
     @ExceptionHandler(ContractAnalysisException.class)
-    public ResponseEntity<Void> handle(ContractAnalysisException e) {
+    public ResponseEntity<ErrorResponse> handle(ContractAnalysisException e) {
         HttpStatus status = switch (e.getStage()) {
             case PDF_EXTRACTION -> HttpStatus.UNPROCESSABLE_ENTITY;
             default -> HttpStatus.BAD_GATEWAY;
         };
         log.error("Contract analysis failed at stage {}: {}", e.getStage(), e.getMessage(), e);
-        return ResponseEntity.status(status).build();
+        return ResponseEntity.status(status).body(new ErrorResponse(e.getMessage()));
     }
 }
