@@ -23,7 +23,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 @EnableWireMock({
         @ConfigureWireMock(name = "openai", baseUrlProperties = "openai.base-url")
 })
-@TestPropertySource(properties = "openai.api-key=test-key")
+@TestPropertySource(properties = {"openai.api-key=test-key", "openai.model=o4-mini"})
 class OpenAiContractAnalyzerTest {
 
     @InjectWireMock("openai")

@@ -27,6 +27,9 @@ public class OpenAiContractAnalyzer {
             OpenAiProperties properties,
             ResourceLoader resourceLoader,
             ObjectMapper objectMapper) {
+        if (properties.apiKey() == null || properties.apiKey().isBlank()) {
+            throw new IllegalStateException("OPENAI_API_KEY must be set");
+        }
         this.restClient = builder
                 .baseUrl(properties.baseUrl())
                 .defaultHeader("Authorization", "Bearer " + properties.apiKey())

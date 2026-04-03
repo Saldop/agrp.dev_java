@@ -31,7 +31,7 @@ import static org.hamcrest.Matchers.*;
         @ConfigureWireMock(name = "presidio-analyzer", baseUrlProperties = "presidio.analyzer-url"),
         @ConfigureWireMock(name = "openai", baseUrlProperties = "openai.base-url")
 })
-@TestPropertySource(properties = "openai.api-key=test-key")
+@TestPropertySource(properties = {"openai.api-key=test-key", "openai.model=o4-mini"})
 class ContractApiTest {
 
     @LocalServerPort
