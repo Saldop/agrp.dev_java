@@ -5,11 +5,13 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.core.io.ResourceLoader;
 import org.springframework.http.MediaType;
+import org.springframework.http.client.SimpleClientHttpRequestFactory;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestClient;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
+import java.time.Duration;
 import java.util.List;
 import java.util.Map;
 
@@ -30,9 +32,13 @@ public class OpenAiContractAnalyzer {
         if (properties.apiKey() == null || properties.apiKey().isBlank()) {
             throw new IllegalStateException("OPENAI_API_KEY must be set");
         }
+        SimpleClientHttpRequestFactory factory = new SimpleClientHttpRequestFactory();
+        factory.setConnectTimeout(Duration.ofSeconds(5));
+        factory.setReadTimeout(Duration.ofSeconds(120));
         this.restClient = builder
                 .baseUrl(properties.baseUrl())
                 .defaultHeader("Authorization", "Bearer " + properties.apiKey())
+                .requestFactory(factory)
                 .build();
         this.properties = properties;
         this.systemPrompt = loadResource(resourceLoader, "classpath:prompts/contract-analysis-en.txt");

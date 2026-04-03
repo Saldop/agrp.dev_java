@@ -2,9 +2,11 @@ package dev.agrp.contract.presidio;
 
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.MediaType;
+import org.springframework.http.client.SimpleClientHttpRequestFactory;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestClient;
 
+import java.time.Duration;
 import java.util.*;
 
 @Component
@@ -24,8 +26,12 @@ public class PresidioClient {
     private final RestClient analyzerClient;
 
     public PresidioClient(RestClient.Builder builder, PresidioProperties properties) {
+        SimpleClientHttpRequestFactory factory = new SimpleClientHttpRequestFactory();
+        factory.setConnectTimeout(Duration.ofSeconds(5));
+        factory.setReadTimeout(Duration.ofSeconds(30));
         this.analyzerClient = builder
                 .baseUrl(properties.analyzerUrl())
+                .requestFactory(factory)
                 .build();
     }
 
